@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"nnfs_go/utils"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 type Neuron struct {
@@ -30,13 +32,23 @@ func main() {
 
 	fmt.Println("Outputs", outArr)
 
-	a := [][]float64{{1, 2, 3}}
-	b := utils.TransposeMatrix([][]float64{{2, 3, 4}}) //[][]float64{{2}, {3}, {4}}
+	a_raw := []float64{1, 2, 3}
+	b_raw := []float64{2, 3, 4}
 
-	res, err := utils.MatrixMultiply(a, b)
+	b := utils.TransposeMatrix([][]float64{b_raw}) //[][]float64{{2}, {3}, {4}}
+	a_mat := mat.NewDense(1, 3, a_raw)
+	b_mat := mat.NewDense(3, 1, b_raw)
+	//b_matT := b_mat.T()
+	var result_mat mat.Dense
+	result_mat.Mul(a_mat, b_mat)
+
+	res, err := utils.MatrixMultiply([][]float64{a_raw}, b)
 	if err != nil {
 		fmt.Println("Error matrixMultiply", err)
 	}
+
+	fmt.Println("bmat using mat", mat.Formatted(b_mat))
+	fmt.Println("res mat", mat.Formatted(&result_mat))
 	fmt.Println("res matrixMult", res)
 
 	b_inputs := [][]float64{
@@ -69,4 +81,5 @@ func main() {
 		}
 		fmt.Println() // New line after each row
 	}
+
 }
