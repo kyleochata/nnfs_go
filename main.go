@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"nnfs_go/data"
 	"nnfs_go/utils"
 
 	"gonum.org/v1/gonum/mat"
@@ -12,7 +13,7 @@ type Neuron struct {
 	bias    float64
 }
 
-func main() {
+func RunModel() {
 	inputs := []float64{1, 2, 3, 2.5}
 
 	weights1 := []float64{0.2, 0.8, -0.5, 1.0}
@@ -62,24 +63,59 @@ func main() {
 
 	fmt.Println(utils.TransposeMatrix(weights))
 
-	layer_outs, err := utils.MatrixMultiply(b_inputs, utils.TransposeMatrix(weights))
+	layerout_1, err := utils.MatrixMultiply(b_inputs, utils.TransposeMatrix(weights))
 	if err != nil {
 		fmt.Println("matrixMult batch inputs err", err)
 		return
 	}
 
-	for i := range layer_outs {
+	for i := range layerout_1 {
 		for j := 0; j < len(biases); j++ {
-			layer_outs[i][j] += biases[j]
+			layerout_1[i][j] += biases[j]
 		}
 	}
-
-	for i, row := range layer_outs {
+	fmt.Println("==== layerout_1 ====")
+	for i, row := range layerout_1 {
 		fmt.Printf("i: %v row: ", i)
 		for _, val := range row {
 			fmt.Printf("%.3f ", val) // Format to 2 decimal places
 		}
 		fmt.Println() // New line after each row
 	}
+	fmt.Println("==== END LAYER 1 ====")
+	second_weights := [][]float64{
+		{0.1, -0.14, 0.5},
+		{-0.5, 0.12, -0.33},
+		{-0.44, 0.73, -0.13},
+	}
+	second_biases := []float64{-1, 2, -0.5}
 
+	layerout_2, err := utils.MatrixMultiply(layerout_1, utils.TransposeMatrix(second_weights))
+	if err != nil {
+		fmt.Println("matrixMult batch inputs err", err)
+		return
+	}
+
+	for i := range layerout_2 {
+		for j := 0; j < len(biases); j++ {
+			layerout_2[i][j] += second_biases[j]
+		}
+	}
+	fmt.Println("==== layerout_2 ====")
+	for i, row := range layerout_2 {
+		fmt.Printf("i: %v row: ", i)
+		for _, val := range row {
+			fmt.Printf("%.3f ", val) // Format to 2 decimal places
+		}
+		fmt.Println() // New line after each row
+	}
+	fmt.Println("==== END LAYER 2 ====")
+}
+
+func main() {
+	RunModel()
+	x, y := data.SpiralData(100, 3)
+
+	fmt.Println(x)
+	fmt.Println(y)
 }
